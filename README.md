@@ -1,5 +1,5 @@
 Our project is a store selling furniture products.
-It is built on ASP.NET 07 based on REST architecture Using Entity Framework (EF) with DB-first approach,
+It is built on ASP.NET 08 based on REST architecture Using Entity Framework (EF) with DB-first approach,
 AutoMapper for object mapping and Config files for easy configuration management as connection string. 
 Our project –  The client and server have validation for security and Password strength check for Enhanced security by using ZXCVBN library. 
 The project is built in layers, the layers are divided into controllers, services and repositories, 
