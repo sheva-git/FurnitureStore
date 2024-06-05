@@ -9,6 +9,7 @@ async function addUserToUsers() {
         alert("Username and password are required.");
         return;
     }
+    if (email && !validateEmail(email)) { alert("Invalid email"); return; }
 
     const user = { userName, lastName, password, firstName, email };
     const passwordStrength = await checkPasswordStrength(password);
@@ -43,15 +44,18 @@ async function updateUser() {
     const userId = localStorage.getItem("userID");
     const updatedUserDetails = await fetchUserDetails(userId);
     if (!updatedUserDetails) return;
-
-    const { firstName, lastName, password, email } = getUserInputDetails(updatedUserDetails)
-    const user = { userName: updatedUserDetails.userName, userId, firstName, lastName, password, email };
+    const { firstName, lastName, password, email } = getUserInputDetails(updatedUserDetails);
+    const user = { userName: updatedUserDetails.userName, userId, firstName, lastName, password, email: email.trim() };
+    if (user.email) {
+        if (!validateEmail(user.email)) { alert("Invalid email"); return; }
+    }
 
     const passwordStrength = await checkPasswordStrength(password);
     if (passwordStrength >= 2) {
         const res = await fetchApprove(`api/User/${userId}`, "PUT", user);
         handleUserUpdateResponse(res);
-    } else {
+    }
+    else {
         alert("Weak password.");
     }
 }
@@ -96,9 +100,8 @@ function handleUserLoginResponse(res) {
         });
     }
 }
-
 function handlePasswordCheckResponse(res) {
-    const passwordStrength = res.json().then(strength => {
+    return res.json().then(strength => {
         const colorIndicator = document.getElementById("passwordCheck");
         if (strength === 0) {
             colorIndicator.style.setProperty("background-color", "red");
@@ -109,7 +112,6 @@ function handlePasswordCheckResponse(res) {
         }
         return strength;
     });
-    return passwordStrength;
 }
 
 function handleUserUpdateResponse(res) {
@@ -130,4 +132,10 @@ function getUserInputDetails(defaultUserDetails) {
     const password = document.getElementById("txtPassword").value || defaultUserDetails.password;
     const email = document.getElementById("txtEmail").value || defaultUserDetails.email;
     return { firstName, lastName, password, email };
+}
+
+
+function validateEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
 }
